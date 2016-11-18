@@ -12,5 +12,5 @@ eg.
  Will create two object file com1 and com2 which can be executed with ' ./' command.
  
 # Performance difference
-For sorting and array of size 30000 normal merge sort took 0.011300 - 0.035980 seconds where as multithreaded merge sort took 0.007291 - 0.017000 seconds.
+For sorting and array of size 30000 normal merge sort took 0.011300 - 0.035980 seconds where as multithreaded merge sort took 0.007291 - 0.017000 seconds on a dual core i7 clocked at 3ghz .
 which is around 50% of speed improvement. 
