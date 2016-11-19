@@ -28,7 +28,9 @@ typedef struct{
 void merge(int p,int q,int r,int *arr)
 {
 	int n1 = q-p+1,n2 = r-q,i,j,k;
-	int L[n1+1],R[n2+1];
+	int *L,*R;
+	L= calloc(n1+1,sizeof(int));
+	R= calloc(n2+1,sizeof(int));
 	L[n1] = INT_MAX;
 	R[n2] = INT_MAX;
 	for (i=0;i<n1;i++)
@@ -50,6 +52,8 @@ void merge(int p,int q,int r,int *arr)
 			j++;
 		}
 	}
+	free(L);
+	free(R);
 }
 /**
  * Merge Sorts an array
@@ -92,29 +96,31 @@ void *sort(void *a)
  */
 void merge_final(int p,int r,int k,int *arr)
 {
-	int i,j=0,l=-1,ptrs[(r-p+1)/k+1],buff=INT_MAX,buffI=0;
-  	int dList[(r-p+1)/k+1][k+1];
+	int i,j=0,l=0,*ptrs,buff=INT_MAX,buffI=0;
+  	int *dList,n = k+2;
+  	dList = calloc(((r-p+1)/k+1)*(k+2),sizeof(int));
+  	ptrs = calloc((r-p+1)/k+1,sizeof(int));
 	for(i=0;i<(r-p+1);i++)
     	{
-		if(i%k == 0)
+		if(i%k == 0 && (i != 0))
 	    	{
-		    	dList[l][j] = INT_MAX;
-	      		l++;
+		    	dList[l*n + j] = INT_MAX;
+			l++;
 		    	ptrs[l]=0;
 		    	j=0;
 	    	}
-	    	dList[l][j] = arr[i];
+	    	dList[l*n + j] = arr[i];
 	    	j++;
 	}
-  	dList[l][j] = INT_MAX;
+  	dList[l*n +j] = INT_MAX;
 
 	for(i=0;i<(r-p+1);i++)
     	{
 		for(j=0;j<=l;j++)
 	    	{
-	         	if (dList[j][ptrs[j]]<buff)
+	         	if (dList[j*n + ptrs[j] ]<buff)
 		    	{
-				buff = dList[j][ptrs[j]];
+				buff = dList[j*n + ptrs[j]];
 				buffI = j;
 			}
 	    	}
@@ -122,12 +128,15 @@ void merge_final(int p,int r,int k,int *arr)
 	    ptrs[buffI]++;
 	    buff = INT_MAX;
 	}
+	free(dList);
+	free(ptrs);
 
 }
 int main(int argC,char *arg[])
 {
 	int size,i,k;
-  	clock_t begin = clock();
+	FILE *fp;
+	fp = fopen("arr.txt","w");
 	if (argC == 1)
 	{
 		printf("\nEnter the size of array");
@@ -137,31 +146,39 @@ int main(int argC,char *arg[])
 	{
 		size = atoi(arg[1]);
 	}
-	int arr[size];
+	int *arr;
+	arr = calloc(size,sizeof(int));
 	printf("\n%d \n",size);
 	for(i=0;i<size;i++)
 	{
 		arr[i] = rand();
-		printf("%d  ",arr[i]);
+		fprintf(fp,"%d  ",arr[i]);
 	}
-  	k = size/4;
-    	pthread_t thread[size/k+1];
-  	pass argu[size/k+1];
+  	k = size/3;
+    	pthread_t *thread;
+    	thread = calloc(size/k+1,sizeof(pthread_t));
+  	pass *argu;
+  	argu = calloc(size/k+1,sizeof(pass));
+  	clock_t begin = clock();
   	for(i=0;i<size/k+1;i++)
     	{
 	    	argu[i].p = 0 + i*k;argu[i].r = size;argu[i].k = k;argu[i].arr = arr;
-      		pthread_create(&thread[i],NULL,sort,&argu[i]);
+     		pthread_create(&thread[i],NULL,sort,&argu[i]);
     	}
   	for(i=0;i<size/k+1;i++)
     	{
       		pthread_join(thread[i],NULL);
     	}
+    	
+    	free(thread);
+    	free(argu);
   	merge_final(0,size-1,k,arr);
-  /**	printf("\n Array after merging is: \n");
+ /** 	printf("\n Array after merging is: \n");
   	for(i=0;i<size;i++)
 	{
 		printf(" %d ",arr[i]);
-	}**/
+	}*/
+	free(arr);
   	clock_t end = clock();
   	printf("\nElapsed: %f seconds\n", (double)(begin - end) / CLOCKS_PER_SEC);
   	printf("\n");

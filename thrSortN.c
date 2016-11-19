@@ -17,7 +17,9 @@
 void merge(int p,int q,int r,int *arr)
 {
 	int n1 = q-p+1,n2 = r-q,i,j,k;
-	int L[n1+1],R[n2+1];
+	int *L,*R;//L[n1+1],R[n2+1];
+	L= calloc(n1+1,sizeof(int));
+	R= calloc(n2+1,sizeof(int));
 	L[n1] = INT_MAX;
 	R[n2] = INT_MAX;
 	for (i=0;i<n1;i++)
@@ -39,6 +41,8 @@ void merge(int p,int q,int r,int *arr)
 			j++;
 		}
 	}
+	free(L);
+	free(R);
 }
 /**
  * Merge Sorts an array
@@ -58,7 +62,8 @@ void merge_sort(int p,int r,int *arr)
 int main(int argC,char *arg[])
 {
 	int size,i,k=20;
-  	clock_t begin = clock();
+	FILE *fp;
+  	fp = fopen("arr.txt","r");
 	if (argC == 1)
 	{
 		printf("\nEnter the size of array");
@@ -68,19 +73,23 @@ int main(int argC,char *arg[])
 	{
 		size = atoi(arg[1]);
 	}
-	int arr[size];
+	int *arr;
+	arr = malloc(sizeof(int)*(size+1));
 	printf("\n%d \n",size);
 	for(i=0;i<size;i++)
 	{
-		arr[i] = rand();
-		printf("%d  ",arr[i]);
+		char str[20];
+		fscanf(fp,"%s  ",str);
+		arr[i] = atoi(str);
 	}
+	fclose(fp);
+	clock_t begin = clock();
   	merge_sort(0,size-1,arr);
-  	printf("\n Array after merge sort is: \n");
+ /** 	printf("\n Array after merge sort is: \n");
   	for(i=0;i<size;i++)
 	{
 		printf(" %d ",arr[i]);
-	}
+	}*/
   	clock_t end = clock();
   	printf("\nElapsed: %f seconds\n", (double)(begin - end) / CLOCKS_PER_SEC);
   	printf("\n");
