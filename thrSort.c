@@ -12,6 +12,9 @@
 
 /**
  * sturucture used to pass arguments to threads
+ * p is the starting index
+ * r is the ending endex
+ * k is size of array
  */
 typedef struct{
   	int p;
